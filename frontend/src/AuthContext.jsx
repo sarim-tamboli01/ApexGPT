@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyToken = async (tokenToVerify) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/verify`, {
+      const response = await fetch(`${server}/api/auth/verify`, {
         headers: {
           Authorization: `Bearer ${tokenToVerify}`,
         },
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/login`, {
+      const response = await fetch(`${server}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/signup`, {
+      const response = await fetch(`${server}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
