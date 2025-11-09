@@ -1,8 +1,12 @@
 import express from "express";
 import Thread from "../models/Thread.js";
 import getOpenAIAPIResponse from "../utils/openai.js";
+import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
+
+// All chat routes require authentication
+router.use(authenticateToken);
 
 router.post("/test", async (req, res) => {
   try {
@@ -18,10 +22,10 @@ router.post("/test", async (req, res) => {
   }
 });
 
-//get all threads
+//get all threads for the authenticated user
 router.get("/thread", async (req, res) => {
   try {
-    const threads = await Thread.find({}).sort({ updateAt: -1 });
+    const threads = await Thread.find({ userId: req.user._id }).sort({ updateAt: -1 });
     res.send(threads);
   } catch (e) {
     console.log("Error fetching threads", e);
@@ -31,9 +35,9 @@ router.get("/thread", async (req, res) => {
 router.get("/thread/:threadId", async (req, res) => {
   const { threadId } = req.params;
   try {
-    const thread = await Thread.findOne({ threadId });
+    const thread = await Thread.findOne({ threadId, userId: req.user._id });
     if (!thread) {
-      res.status(404).json({ error: "Thread not found" });
+      return res.status(404).json({ error: "Thread not found" });
     }
     res.json(thread.messages);
   } catch (e) {
@@ -44,9 +48,9 @@ router.get("/thread/:threadId", async (req, res) => {
 router.delete("/thread/:threadId", async (req, res) => {
   const { threadId } = req.params;
   try {
-    const deleteThread = await Thread.findOneAndDelete({ threadId });
+    const deleteThread = await Thread.findOneAndDelete({ threadId, userId: req.user._id });
     if (!deleteThread) {
-      res.status(404).json({ error: "Thread not found" });
+      return res.status(404).json({ error: "Thread not found" });
     }
     res.status(200).json({ message: "Thread deleted successfully" });
   } catch (e) {
@@ -57,14 +61,15 @@ router.delete("/thread/:threadId", async (req, res) => {
 router.post("/chat", async (req, res) => {
   const { threadId, message } = req.body;
   if (!threadId || !message) {
-    res.status(400).json({ error: "ThreadId and message are required" });
+    return res.status(400).json({ error: "ThreadId and message are required" });
   }
   try {
-    let thread = await Thread.findOne({ threadId });
+    let thread = await Thread.findOne({ threadId, userId: req.user._id });
     if (!thread) {
       thread = new Thread({
         threadId,
-        title: message,
+        userId: req.user._id,
+        title: message.length > 50 ? message.substring(0, 50) + "..." : message,
         messages: [
           {
             role: "user",

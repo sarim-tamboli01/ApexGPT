@@ -1,32 +1,90 @@
 .chats{
     max-width: 700px;
-    overflow-y: scroll;
-    padding: 8rem;
+    overflow-y: auto;
+    padding: 8rem 2rem;
     scrollbar-width: thin; /* For Firefox */
     scrollbar-color: rgba(0,0,0,0.3) transparent; 
+    width: 100%;
+    margin: 0 auto;
+}
 
+.chats::-webkit-scrollbar {
+    width: 6px;
+}
 
+.chats::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chats::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+@media (max-width: 767.98px) {
+    .chats {
+        padding: 6rem 1.5rem;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .chats {
+        padding: 5rem 1rem;
+    }
 }
 
 .userDiv{
     display: flex;
     justify-content: flex-end;
-
-
+    margin-bottom: 1rem;
 }
+
 .gptDiv{
     text-align: left;
     font-size: 0.9rem;
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
 
+@media (max-width: 767.98px) {
+    .gptDiv {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .gptDiv {
+        font-size: 0.8rem;
+    }
 }
 
 .userMessage{
     background-color: #323232;
     padding: 10px 20px;
     border-radius: 14px;
-    margin-left: 15rem;
+    margin-left: 0;
     max-width: 500px;
     width: fit-content;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+@media (max-width: 767.98px) {
+    .userMessage {
+        max-width: 80%;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .userMessage {
+        max-width: 85%;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
 }
 .hljs {
     border-radius: 14px !important;
@@ -34,4 +92,36 @@
 
 pre {
     white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+@media (max-width: 767.98px) {
+    pre {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    pre {
+        font-size: 0.75rem;
+    }
+}
+
+h1 {
+    font-size: 1.5rem;
+    margin: 2rem 0;
+}
+
+@media (max-width: 767.98px) {
+    h1 {
+        font-size: 1.3rem;
+        margin: 1.5rem 0;
+    }
+}
+
+@media (max-width: 575.98px) {
+    h1 {
+        font-size: 1.1rem;
+        margin: 1rem 0;
+    }
 }

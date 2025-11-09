@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import "./ChatWindow.css";
 import Chat from "./Chat.jsx";
 import { MyContext } from "./MyContext";
+import { useAuth } from "./AuthContext";
 import { RingLoader } from "react-spinners";
 import server from "./config";
 
@@ -19,7 +20,9 @@ function ChatWindow() {
     setPrevChats,
     newChat,
     setNewChat,
+    setSidebarOpen,
   } = useContext(MyContext);
+  const { getAuthHeaders, logout } = useAuth();
   
   const [loading, setLoading] = useState(false);
   const [isOpen,setIsOpen] = useState(false);
@@ -29,7 +32,7 @@ function ChatWindow() {
     setNewChat(false);
     const options = {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         message: prompt,
         threadId: currThreadId,
@@ -37,6 +40,11 @@ function ChatWindow() {
     };
     try {
       const response = await fetch(`${server}/api/chat`, options);
+      if (response.status === 401) {
+        logout();
+        setLoading(false);
+        return;
+      }
       const res = await response.json();
       console.log(res);
       setReply(res.reply);
@@ -69,9 +77,18 @@ function ChatWindow() {
   return (
     <div className="chatwindow">
       <div className="navbar">
-        <span>
-          ApexGpt <i className="fa-solid fa-chevron-down"></i>
-        </span>
+        <div className="navbar-left">
+          <button 
+            className="menu-toggle-btn d-lg-none" 
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Toggle sidebar"
+          >
+            <i className="fa-solid fa-bars"></i>
+          </button>
+          <span>
+            ApexGpt <i className="fa-solid fa-chevron-down"></i>
+          </span>
+        </div>
         <div className="userIconDiv" onClick={handelProfileClick}>
           <span className="userIcon">
             {" "}
@@ -82,9 +99,9 @@ function ChatWindow() {
                  {
                 isOpen && 
                 <div className="dropDown">
-                    <div className="dropDownItem"><i class="fa-solid fa-gear"></i> Settings</div>
-                    <div className="dropDownItem"><i class="fa-solid fa-cloud-arrow-up"></i> Upgrade plan</div>
-                    <div className="dropDownItem"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
+                    <div className="dropDownItem"><i className="fa-solid fa-gear"></i> Settings</div>
+                    <div className="dropDownItem"><i className="fa-solid fa-cloud-arrow-up"></i> Upgrade plan</div>
+                    <div className="dropDownItem" onClick={logout}><i className="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
                 </div>
             }
       <Chat></Chat>
